@@ -1,28 +1,31 @@
 import { Express } from "express";
-import fs from "fs";
-import path from "path";
 import swaggerUi from "swagger-ui-express";
-
-const swaggerUICss =
-  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.3.0/swagger-ui.min.css";
+import swaggerJSDoc from "swagger-jsdoc";
 
 export function setupSwagger(app: Express) {
-  const swaggerFilePath = path.join(process.cwd(), "src/docs/swagger.json");
-  const swaggerDocument = JSON.parse(fs.readFileSync(swaggerFilePath, "utf-8"));
-
-  const options = {
-    customCssUrl: "/swagger-ui/swagger-ui.css",
-    customJs: [
-      "/swagger-ui/swagger-ui-bundle.js",
-      "/swagger-ui/swagger-ui-standalone-preset.js",
-    ],
+  const swaggerOptions: swaggerJSDoc.Options = {
+    definition: {
+      openapi: "3.0.0",
+      info: {
+        title: "API Documentation for ITASE Project",
+        version: "1.0.0",
+        description:
+          "Dokumentasi REST API untuk proyek Predictive Lead Scoring",
+      },
+      servers: [
+        {
+          url: "https://itase-6.vercel.app", // URL base proyek Anda
+        },
+      ],
+    },
+    // Pastikan path ini menunjuk ke file rute Anda yang berisi komentar JSDoc
+    apis: ["./src/routes/*.ts"],
   };
 
-  app.use(
-    "/api-docs",
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerDocument, options)
-  );
+  const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
+  // Gunakan setup default tanpa kustomisasi CSS/JS untuk kesederhanaan di Vercel
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   console.log("📚 Swagger docs available at /api-docs");
 }
