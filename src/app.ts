@@ -3,6 +3,7 @@ import cors from "cors";
 import express, { Request, Response, NextFunction } from "express";
 import createError, { HttpError } from "http-errors";
 import logger from "morgan";
+import { setupSwagger } from "./utils/swagger";
 import { authorize } from "./middleware/auth";
 import dotenv from "dotenv";
 import authRouter from "./user/route";
@@ -19,6 +20,9 @@ app.use(cors({ origin: "*" }));
 
 // routes
 app.use("/api/users/", authRouter);
+
+// swagger
+setupSwagger(app);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {
