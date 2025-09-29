@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id String @id @default(cuid())
+  name String @unique
+  email String @unique
+  google_id String? @unique
+  password String
+  date_of_birth DateTime
+  gender String
+  height Float
+  weight Float
+  bmr Float?
+  calorie Float?
+  carbohydrate Float?
+  protein Float?
+  fat Float?
+  vitamin_a Float?
+  vitamin_c Float?
+  vitamin_d Float?
+  vitamin_e Float?
+  vitamin_k Float?
+  calsium Float?
+  iron Float?
+  calium Float?
+  magnesium Float?
+  natrium Float?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  analyses Analyse[]
+
+  @@map("users")
+
+}
+
+model Analyse {
+  analyse_id String @id @default(cuid())
+  user_id String
+  image_url String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  users User @relation(fields: [user_id], references: [user_id])
+
+  identified_foods IdentifiedFood[]
+
+  @@map("analyses")
+}
+
+model IdentifiedFood {
+  food_id String @id @default(cuid())
+  analyse_id String
+  food_name String
+  user_input_weight Float?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  analyses Analyse @relation(fields: [analyse_id], references: [analyse_id])
+
+  food_compositions FoodComposition[]
+
+  @@map("identified_foods")
+}
+
+model FoodComposition {
+  composition_id String @id @default(cuid())
+  food_id String
+  nutrient_id String
+  food_name String
+  value Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  identified_foods IdentifiedFood @relation(fields: [food_id], references: [food_id])
+
+  nutrients Nutrient @relation(fields: [nutrient_id], references: [nutrient_id])
+
+  @@map("food_compositions")
+}
+
+model Nutrient {
+  nutrient_id String @id @default(cuid())
+  nutrient_name String
+  benefit_info String
+  risk_info String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  food_compositions FoodComposition[]
+
+  @@map("nutrients")
+}
