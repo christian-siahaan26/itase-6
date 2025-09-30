@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(cors({ origin: "*" }));
 
 // routes
-app.use("/api/users/", authRouter);
+app.use("/api/auth/", authRouter);
 
 // swagger
 setupSwagger(app);

@@ -12,7 +12,7 @@
     }
   ],
   "paths": {
-    "/users/register": {
+    "/auth/register": {
       "post": {
         "summary": "Register",
         "tags": ["Auth"],
@@ -82,7 +82,7 @@
         }
       }
     },
-    "/users/login": {
+    "/auth/login": {
       "post": {
         "summary": "Login",
         "tags": ["Auth"],

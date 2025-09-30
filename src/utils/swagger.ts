@@ -7,9 +7,43 @@ const swaggerUICss =
   "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.3.0/swagger-ui.min.css";
 
 export function setupSwagger(app: Express) {
-  const swaggerFilePath = path.resolve(__dirname, "../docs/swagger.json");
-  const swaggerDocument = JSON.parse(fs.readFileSync(swaggerFilePath, "utf-8"));
-  // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  let swaggerDocument;
+
+  try {
+    // Try multiple paths for different environments
+    const possiblePaths = [
+      path.resolve(__dirname, "../../docs/swagger.json"), // For production build
+      path.resolve(__dirname, "../docs/swagger.json"),    // Alternative path
+      path.join(process.cwd(), "docs/swagger.json"),      // From project root
+      path.join(process.cwd(), "src/docs/swagger.json"),  // If docs in src folder
+    ];
+
+    let loaded = false;
+    for (const swaggerPath of possiblePaths) {
+      if (fs.existsSync(swaggerPath)) {
+        swaggerDocument = JSON.parse(fs.readFileSync(swaggerPath, "utf-8"));
+        console.log(`✅ Swagger loaded from: ${swaggerPath}`);
+        loaded = true;
+        break;
+      }
+    }
+
+    if (!loaded) {
+      // Fallback: try require if file system fails (for bundled environments)
+      try {
+        swaggerDocument = require("../../docs/swagger.json");
+        console.log("✅ Swagger loaded via require");
+      } catch (requireError) {
+        console.error("❌ Could not load swagger.json from any location");
+        throw new Error("Swagger document not found");
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load swagger.json:", error);
+    // Return early if swagger document cannot be loaded
+    return;
+  }
+
   app.use(
     "/api-docs",
     swaggerUi.serve,
@@ -20,5 +54,5 @@ export function setupSwagger(app: Express) {
     })
   );
 
-  console.log("📚 Swagger docs available at http://localhost:3000/api-docs");
+  console.log("📚 Swagger docs available at /api-docs");
 }
