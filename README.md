@@ -64,9 +64,9 @@ This project follows a clean and organized structure, ensuring maintainability a
 
 ## 📚 API Documentation
 
-A summary of available endpoints. For complete details, visit **[Swagger Page](http://localhost:8080/api-docs/)**.
+A summary of available endpoints. For complete details, visit **[Swagger Page](https://itase-6.vercel.app/api-docs/)**.
 
-**Base URL:** `hhttps://itase-6.vercel.app/api`
+**Base URL:** `https://itase-6.vercel.app/api`
 
 ## Getting Started
 
