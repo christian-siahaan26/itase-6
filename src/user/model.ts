@@ -2,14 +2,14 @@ import { type User as PrismaUser } from "@prisma/client";
 
 class UserModel {
   private user_id: string;
-  private name: string;
+  private name: string | null;
   private email: string;
   private google_id: string | null;
-  private password: string;
-  private date_of_birth: Date;
-  private gender: string;
-  private height: number;
-  private weight: number;
+  private password: string | null;
+  private date_of_birth: Date | null;
+  private gender: string | null;
+  private height: number | null;
+  private weight: number | null;
   private bmr: number | null;
   private calorie: number | null;
   private carbohydrate: number | null;
@@ -30,14 +30,14 @@ class UserModel {
 
   constructor(
     user_id: string,
-    name: string,
+    name: string | null,
     email: string,
     google_id: string | null,
-    password: string,
-    date_of_birth: Date,
-    gender: string,
-    height: number,
-    weight: number,
+    password: string | null,
+    date_of_birth: Date | null,
+    gender: string | null,
+    height: number | null,
+    weight: number | null,
     bmr: number | null,
     calorie: number | null,
     carbohydrate: number | null,

@@ -1,9 +1,10 @@
 import UserRepository from "./repository";
 import { getErrorMessage } from "../utils/error";
 import UserModel from "./model";
-import { UserCreate } from "./type/user";
+import { UserCreate, UserUpdate } from "./type/user";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { time } from "console";
 
 const SECRET_KEY = process.env.JWT_SECRET as string;
 
@@ -20,6 +21,14 @@ class UserService {
     error: string | null;
   }> {
     try {
+      if (!userData.password) {
+        return {
+          user_id: null,
+          email: null,
+          error: "Password is required for standard registration.",
+        };
+      }
+
       const hashedPassword = await bcrypt.hash(userData.password, 10);
 
       const { user_id, email } = await this.userRepository.createUser({
@@ -49,6 +58,14 @@ class UserService {
       const user = await this.userRepository.findUserByEmail(email);
       if (!user) return { token: null, error: "Invalid email or password" };
 
+      if (!user.password) {
+        return {
+          token: null,
+          error:
+            "This account is registered with Google. Please log in with Google.",
+        };
+      }
+
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return { token: null, error: "Invalid email or password" };
 
@@ -72,6 +89,53 @@ class UserService {
         token: null,
         error: getErrorMessage(error),
       };
+    }
+  }
+
+  async loginWithGoogle() {}
+
+  async findUserData(user_id: string): Promise<UserModel | string> {
+    try {
+      const userData = await this.userRepository.findUserById(user_id);
+
+      if (typeof userData === "string") {
+        return userData;
+      }
+
+      if (!userData) {
+        return "User data not found";
+      }
+
+      return userData;
+    } catch (error) {
+      return getErrorMessage(error);
+    }
+  }
+
+  async updateUserData(
+    user_id: string,
+    userData: UserUpdate
+  ): Promise<UserModel | string> {
+    try {
+      const existingUser = await this.userRepository.findUserById(user_id);
+
+      if (typeof existingUser === "string") {
+        return existingUser;
+      }
+
+      if (!existingUser) {
+        return "User not found";
+      }
+
+      const result = await this.userRepository.updateUserData(user_id, userData);
+
+      if (typeof result === "string") {
+        return result;
+      }
+
+      return result;
+    } catch (error) {
+      return getErrorMessage(error);
     }
   }
 }

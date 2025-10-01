@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import e, { NextFunction, Request, Response } from "express";
 import UserService from "./services";
 import { getErrorMessage } from "../utils/error";
 import { AuthRequest } from "../middleware/auth";
@@ -140,6 +140,65 @@ class UserController {
         success: true,
         message: getErrorMessage(error),
       });
+    }
+  }
+
+  async getUserData(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      const result = await this.userService.findUserData(req.params.user_id);
+
+      if (typeof result === "string") {
+        return res.status(400).json({
+          success: false,
+          message: result,
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Success get data user",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateUserData(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      const result = await this.userService.updateUserData(
+        req.params.user_id,
+        req.body
+      );
+
+      if (typeof result === 'string') {
+        return res.status(400).json({
+          success: false,
+          message: result
+        })
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Success update user data",
+        data: result
+      })
+    } catch (error) {
+      next(error)
     }
   }
 }
