@@ -40,8 +40,6 @@ export type UserCreate = {
 
 export type UserUpdate = {
   name?: string;
-  email?: string;
-  google_id?: string;
   password?: string;
   date_of_birth?: Date;
   gender?: string;

@@ -201,35 +201,98 @@
     },
     
     
-    "/users/{id}": {
-      "put": {
-        "summary": "Update a user",
+    "/auth/{user_id}": {
+      "get": {
+        "summary": "Get user data",
         "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
-            "name": "id",
+            "name": "user_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string"
             }
           }
         ],
-        "description": "Updates a new user with the given name, email, password, date of birth, gender, height and weight.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success": { "type": "boolean", "default": true },
+                    "message": {
+                      "type": "string",
+                      "default": "Success get user data"
+                    },
+                    "data": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "default": false },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "default": false },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update user data or password",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "Partially updates a user's data. Can be used to update profile information (name, height, etc.) or to change the password by providing old and new passwords.",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string" },
-                  "email": { "type": "string" },
-                  "google_id": { "type": "string" },
-                  "password": { "type": "string" },
-                  "date_of_birth": { "type": "string" },
-                  "gender": { "type": "string" },
-                  "height": { "type": "number" },
-                  "weight": { "type": "number" }
+                "name": { "type": "string" },
+                "date_of_birth": { "type": "string" },
+                "gender": { "type": "string" },
+                "height": { "type": "number" },
+                "weight": { "type": "number" },
+                
+                "oldPassword": { "type": "string" },
+                "newPassword": { "type": "string" }
                 }
               }
             }
@@ -285,13 +348,14 @@
         }
       }
     }
+    
   },
   "components": {
     "schemas": {
       "User": {
         "type": "object",
         "properties": {
-          "id": { "type": "integer" },
+          "user_id": { "type": "string" },
           "name": { "type": "string" },
           "email": { "type": "string" },
           "google_id": { "type": "string" },
@@ -299,7 +363,24 @@
           "date_of_birth": { "type": "string" },
           "gender": { "type": "string" },
           "height": { "type": "number" },
-          "weight": { "type": "number" }
+          "weight": { "type": "number" },
+          "bmr": { "type": "number" },
+          "calorie": { "type": "number" },
+          "carbohydrate": { "type": "number" },
+          "protein": { "type": "number" },
+          "fat": { "type": "number" },
+          "vitamin_a": { "type": "number" },
+          "vitamin_c": { "type": "number" },
+          "vitamin_d": { "type": "number" },
+          "vitamin_e": { "type": "number" },
+          "vitamin_k": { "type": "number" },
+          "calsium": { "type": "number" },
+          "iron": { "type": "number" },
+          "calium": { "type": "number" },
+          "magnesium": { "type": "number" },
+          "natrium": { "type": "number" },
+          "created_at": { "type": "string" },
+          "updated_at": { "type": "string" }
         }
       },
       "GetUsersResponse": {

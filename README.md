@@ -1,12 +1,8 @@
-# Skill Test Backend MiniLemon
+# GIZINET App Backend
 
-This is the backend for a note-taking application built with Express.js.
+This is the backend for managing food nutrition analysis application built with Express.js.
 
 This project follows a clean architecture approach, which aims to separate concerns and create a maintainable and scalable codebase. Here's a brief explanation of the structure:
-
-NOTE: Implementing hard delete as per test requirements.
-In a production environment, a soft delete approach (e.g., setting an 'is_deleted' flag or a 'deleted_at' timestamp)
-Would be the preferred best practice for data recovery and audit trail purposes.
 
 ## Architecture:
 

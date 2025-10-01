@@ -21,7 +21,7 @@ router.post("/authorize", (req, res) => userController.authorize(req, res));
 router.get("/:user_id", authorize, (req, res, next) =>
   userController.getUserData(req, res, next)
 );
-router.put("/:user_id", authorize, (req, res, next) =>
+router.patch("/:user_id", authorize, (req, res, next) =>
   userController.updateUserData(req, res, next)
 );
 

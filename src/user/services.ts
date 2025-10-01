@@ -114,7 +114,7 @@ class UserService {
 
   async updateUserData(
     user_id: string,
-    userData: UserUpdate
+    userData: UserUpdate & { old_password?: string; new_password?: string }
   ): Promise<UserModel | string> {
     try {
       const existingUser = await this.userRepository.findUserById(user_id);
@@ -127,7 +127,34 @@ class UserService {
         return "User not found";
       }
 
-      const result = await this.userRepository.updateUserData(user_id, userData);
+      if (userData.new_password && userData.old_password) {
+        if (!existingUser.toDTO().password) {
+          return "Cannot change password for an account registered with Google.";
+        }
+
+        const isOldPasswordCorrect = await bcrypt.compare(
+          userData.old_password,
+          existingUser.toDTO().password!
+        );
+
+        if (!isOldPasswordCorrect) {
+          return "Old password is incorrect"
+        }
+
+        const hashedNewPassword = await bcrypt.hash(userData.new_password, 10)
+        
+        userData.password = hashedNewPassword
+      } else if (userData.new_password && !userData.old_password) {
+        return "Old password is need to change password"
+      }
+
+      delete userData.new_password
+      delete userData.old_password
+
+      const result = await this.userRepository.updateUserData(
+        user_id,
+        userData
+      );
 
       if (typeof result === "string") {
         return result;
