@@ -14,8 +14,9 @@
   "paths": {
     "/auth/register": {
       "post": {
-        "summary": "Register",
-        "tags": ["Auth"],
+        "summary": "Create a new user",
+        "tags": ["Users"],
+        "description": "Creates a new user with the given name, email, password, date of birth, gender, height and weight.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -33,7 +34,8 @@
                 }
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "201": {
@@ -41,11 +43,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
                   "properties": {
                     "success": { "type": "boolean" },
                     "message": { "type": "string" },
-                    "data": { "type": "string" }
+                    "data": { "$ref": "#/components/schemas/User" }
                   }
                 }
               }
@@ -58,7 +59,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": { "type": "boolean", "default": false },
                     "message": { "type": "string" }
                   }
                 }
@@ -72,7 +73,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": { "type": "boolean", "default": false },
                     "message": { "type": "string" }
                   }
                 }
@@ -84,8 +85,9 @@
     },
     "/auth/login": {
       "post": {
-        "summary": "Login",
-        "tags": ["Auth"],
+        "summary": "Login user",
+        "tags": ["Users"],
+        "description": "Login with the given email and password",
         "requestBody": {
           "content": {
             "application/json": {
@@ -97,19 +99,19 @@
                 }
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
                   "properties": {
                     "success": { "type": "boolean" },
                     "message": { "type": "string" },
-                    "data": { "type": "string" }
+                    "data": { "$ref": "#/components/schemas/User" }
                   }
                 }
               }
@@ -122,7 +124,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": { "type": "boolean", "default": false },
                     "message": { "type": "string" }
                   }
                 }
@@ -136,7 +138,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": { "type": "boolean", "default": false },
                     "message": { "type": "string" }
                   }
                 }
@@ -149,14 +151,14 @@
     "/auth/authorize": {
       "post": {
         "summary": "Authorize",
-        "tags": ["Auth"],
+        "tags": ["Users"],
+        "description": "Login with the given email and password",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
                   "properties": {
                     "success": { "type": "boolean" },
                     "message": { "type": "string" },
@@ -173,7 +175,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": { "type": "boolean", "default": false },
                     "message": { "type": "string" }
                   }
                 }
@@ -187,7 +189,93 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": { "type": "boolean", "default": false },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    
+    "/users/{id}": {
+      "put": {
+        "summary": "Update a user",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "description": "Updates a new user with the given name, email, password, date of birth, gender, height and weight.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "google_id": { "type": "string" },
+                  "password": { "type": "string" },
+                  "date_of_birth": { "type": "string" },
+                  "gender": { "type": "string" },
+                  "height": { "type": "number" },
+                  "weight": { "type": "number" }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success": { "type": "boolean", "default": true },
+                    "message": {
+                      "type": "string",
+                      "default": "Success update user"
+                    },
+                    "data": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "default": false },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "default": false },
                     "message": { "type": "string" }
                   }
                 }
@@ -198,17 +286,44 @@
       }
     }
   },
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "google_id": { "type": "string" },
+          "password": { "type": "string" },
+          "date_of_birth": { "type": "string" },
+          "gender": { "type": "string" },
+          "height": { "type": "number" },
+          "weight": { "type": "number" }
+        }
+      },
+      "GetUsersResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "message": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "number" },
+              "page": { "type": "number" },
+              "lastPage": { "type": "number" },
+              "hasNextPage": { "type": "boolean" },
+              "hasPrevPage": { "type": "boolean" }
+            }
+          }
+        }
       }
     }
   }
