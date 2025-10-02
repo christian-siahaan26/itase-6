@@ -15,67 +15,60 @@
     "/auth/register": {
       "post": {
         "summary": "Create a new user",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "description": "Creates a new user with the given name, email, password, date of birth, gender, height and weight.",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": { "type": "string" },
-                  "email": { "type": "string" },
-                  "google_id": { "type": "string" },
-                  "password": { "type": "string" },
-                  "date_of_birth": { "type": "string" },
-                  "gender": { "type": "string" },
-                  "height": { "type": "number" },
-                  "weight": { "type": "number" }
-                }
+                "$ref": "#/components/schemas/RegisterUser"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
-            "description": "Successful response",
+            "description": "User created successfully",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
-                    "message": { "type": "string" },
-                    "data": { "$ref": "#/components/schemas/User" }
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User created successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal server error",
+            "description": "Internal Server Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -86,61 +79,76 @@
     "/auth/login": {
       "post": {
         "summary": "Login user",
-        "tags": ["Users"],
-        "description": "Login with the given email and password",
+        "tags": [
+          "Users"
+        ],
+        "description": "Login with the given email and password to receive a JWT.",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
                 "properties": {
-                  "email": { "type": "string" },
-                  "password": { "type": "string" }
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "johndoe@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "strongPassword123"
+                  }
                 }
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
-          "201": {
-            "description": "Successful response",
+          "200": {
+            "description": "Login successful",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
-                    "message": { "type": "string" },
-                    "data": { "$ref": "#/components/schemas/User" }
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Login successful"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Bad Request (e.g., invalid credentials)",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal server error",
+            "description": "Internal Server Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -150,48 +158,47 @@
     },
     "/auth/authorize": {
       "post": {
-        "summary": "Authorize",
-        "tags": ["Users"],
-        "description": "Login with the given email and password",
+        "summary": "Authorize with token",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Validates the bearer token and returns user data if valid.",
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "success": { "type": "boolean" },
-                    "message": { "type": "string" },
-                    "data": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
+            "description": "Authorization successful",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Authorization successful"
+                    },
+                    "data": {
+                      "type": "string",
+                      "example": "User is authorized"
+                    }
                   }
                 }
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -199,20 +206,26 @@
         }
       }
     },
-    
-    
     "/auth/{user_id}": {
       "get": {
         "summary": "Get user data",
-        "tags": ["Users"],
-        "security": [{ "bearerAuth": [] }],
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "required": true,
+            "description": "The ID of the user to retrieve.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "user-abc-123"
             }
           }
         ],
@@ -222,42 +235,50 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "object",
                   "properties": {
-                    "success": { "type": "boolean", "default": true },
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
                     "message": {
                       "type": "string",
-                      "default": "Success get user data"
+                      "example": "Success get user data"
                     },
-                    "data": { "$ref": "#/components/schemas/User" }
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad request",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal server error",
+            "description": "Internal Server Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -266,81 +287,104 @@
       },
       "patch": {
         "summary": "Update user data or password",
-        "tags": ["Users"],
-        "security": [{ "bearerAuth": [] }],
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "required": true,
+            "description": "The ID of the user to update.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "user-abc-123"
             }
           }
         ],
-        "description": "Partially updates a user's data. Can be used to update profile information (name, height, etc.) or to change the password by providing old and new passwords.",
+        "description": "Partially updates a user's data. This endpoint can be used for two distinct purposes:\n1. **Update profile information**: Provide fields like `name`, `height`, etc.\n2. **Change password**: Provide `old_password` and `new_password`.\n\nPlease provide only one type of payload at a time.",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                "name": { "type": "string" },
-                "date_of_birth": { "type": "string" },
-                "gender": { "type": "string" },
-                "height": { "type": "number" },
-                "weight": { "type": "number" },
-                
-                "oldPassword": { "type": "string" },
-                "newPassword": { "type": "string" }
-                }
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateUserData"
+                  },
+                  {
+                    "$ref": "#/components/schemas/UpdatePassword"
+                  }
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "User data or password updated successfully",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "object",
                   "properties": {
-                    "success": { "type": "boolean", "default": true },
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
                     "message": {
                       "type": "string",
-                      "default": "Success update user"
+                      "example": "Success update user"
                     },
-                    "data": { "$ref": "#/components/schemas/User" }
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Bad Request (e.g., invalid input, incorrect old password)",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal server error",
+            "description": "Internal Server Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -348,61 +392,246 @@
         }
       }
     }
-    
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
+      "RegisterUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "strongPassword123"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date",
+            "example": "1995-08-17"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ],
+            "example": "male"
+          },
+          "height": {
+            "type": "number",
+            "description": "Height in cm",
+            "example": 175
+          },
+          "weight": {
+            "type": "number",
+            "description": "Weight in kg",
+            "example": 70
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password",
+          "date_of_birth",
+          "gender",
+          "height",
+          "weight"
+        ]
+      },
+      "UpdateUserData": {
+        "type": "object",
+        "title": "Update User Data Schema",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe Updated"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date",
+            "example": "1995-08-17"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ],
+            "example": "male"
+          },
+          "height": {
+            "type": "number",
+            "example": 176
+          },
+          "weight": {
+            "type": "number",
+            "example": 72
+          }
+        }
+      },
+      "UpdatePassword": {
+        "type": "object",
+        "title": "Update Password Schema",
+        "required": [
+          "old_password",
+          "new_password"
+        ],
+        "properties": {
+          "old_password": {
+            "type": "string",
+            "format": "password",
+            "example": "currentStrongPassword123"
+          },
+          "new_password": {
+            "type": "string",
+            "format": "password",
+            "example": "newVeryStrongPassword456"
+          }
+        }
+      },
       "User": {
         "type": "object",
         "properties": {
-          "user_id": { "type": "string" },
-          "name": { "type": "string" },
-          "email": { "type": "string" },
-          "google_id": { "type": "string" },
-          "password": { "type": "string" },
-          "date_of_birth": { "type": "string" },
-          "gender": { "type": "string" },
-          "height": { "type": "number" },
-          "weight": { "type": "number" },
-          "bmr": { "type": "number" },
-          "calorie": { "type": "number" },
-          "carbohydrate": { "type": "number" },
-          "protein": { "type": "number" },
-          "fat": { "type": "number" },
-          "vitamin_a": { "type": "number" },
-          "vitamin_c": { "type": "number" },
-          "vitamin_d": { "type": "number" },
-          "vitamin_e": { "type": "number" },
-          "vitamin_k": { "type": "number" },
-          "calsium": { "type": "number" },
-          "iron": { "type": "number" },
-          "calium": { "type": "number" },
-          "magnesium": { "type": "number" },
-          "natrium": { "type": "number" },
-          "created_at": { "type": "string" },
-          "updated_at": { "type": "string" }
+          "user_id": {
+            "type": "string",
+            "example": "usr-xyz-789"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@example.com"
+          },
+          "google_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "description": "Hashed password",
+            "example": "$2b$10$..."
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date",
+            "example": "1995-08-17"
+          },
+          "gender": {
+            "type": "string",
+            "example": "male"
+          },
+          "height": {
+            "type": "number",
+            "example": 175
+          },
+          "weight": {
+            "type": "number",
+            "example": 70
+          },
+          "bmr": {
+            "type": "number",
+            "example": 1650.5
+          },
+          "calorie": {
+            "type": "number",
+            "example": 2000
+          },
+          "carbohydrate": {
+            "type": "number",
+            "example": 250
+          },
+          "protein": {
+            "type": "number",
+            "example": 100
+          },
+          "fat": {
+            "type": "number",
+            "example": 60
+          },
+          "vitamin_a": {
+            "type": "number",
+            "example": 65
+          },
+          "vitamin_c": {
+            "type": "number",
+            "example": 70
+          },
+          "vitamin_d": {
+            "type": "number",
+            "example": 75
+          },
+          "vitamin_e": {
+            "type": "number",
+            "example": 80
+          },
+          "vitamin_k": {
+            "type": "number",
+            "example": 85
+          },
+          "calsium": {
+            "type": "number",
+            "example": 90
+          },
+          "iron": {
+            "type": "number",
+            "example": 95
+          },
+          "calium": {
+            "type": "number",
+            "example": 100
+          },
+          "magnesium": {
+            "type": "number",
+            "example": 105
+          },
+          "natrium": {
+            "type": "number",
+            "example": 110
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-10-27T10:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-10-27T10:00:00Z"
+          }
         }
       },
-      "GetUsersResponse": {
+      "ErrorResponse": {
         "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
         "properties": {
-          "success": { "type": "boolean" },
-          "message": { "type": "string" },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/User"
-            }
+          "success": {
+            "type": "boolean",
+            "example": false
           },
-          "meta": {
-            "type": "object",
-            "properties": {
-              "total": { "type": "number" },
-              "page": { "type": "number" },
-              "lastPage": { "type": "number" },
-              "hasNextPage": { "type": "boolean" },
-              "hasPrevPage": { "type": "boolean" }
-            }
+          "message": {
+            "type": "string",
+            "example": "Invalid input provided"
           }
         }
       }
