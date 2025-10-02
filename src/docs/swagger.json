@@ -8,13 +8,17 @@
   "servers": [
     {
       "url": "https://itase-6.vercel.app/api",
-      "description": "Production server"
+      "description": "Production Server"
+    },
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local Development Server"
     }
   ],
   "paths": {
     "/auth/register": {
       "post": {
-        "summary": "Create a new user",
+        "summary": "Create a new user (Standard Registration)",
         "tags": [
           "Users"
         ],
@@ -35,20 +39,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "User created successfully"
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/User"
-                    }
-                  }
+                  "$ref": "#/components/schemas/SuccessResponseWithToken"
                 }
               }
             }
@@ -78,7 +69,7 @@
     },
     "/auth/login": {
       "post": {
-        "summary": "Login user",
+        "summary": "Login user (Standard Login)",
         "tags": [
           "Users"
         ],
@@ -115,20 +106,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Login successful"
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/User"
-                    }
-                  }
+                  "$ref": "#/components/schemas/SuccessResponseWithToken"
                 }
               }
             }
@@ -142,6 +120,30 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/google": {
+      "get": {
+        "summary": "Initiate Google OAuth Login",
+        "tags": [
+          "Users"
+        ],
+        "description": "Starts the Google OAuth 2.0 login flow. This is **not a standard API endpoint** that returns JSON. The frontend should navigate the user's browser directly to this URL. \n\n**Flow for Frontend Team:**\n1. Create a link or button that directs the user to `[server_url]/api/auth/google`.\n2. The user will be redirected to Google to authenticate with their account.\n3. After successful authentication, the backend will redirect the user back to the frontend at the URL specified in the `CLIENT_URL` environment variable (e.g., `https://gizi-net.vercel.app`), specifically to the path `/auth/success`.\n4. The final redirect URL will contain a JWT in a query parameter, like this: `[CLIENT_URL]/auth/success?token=...`\n5. The frontend is responsible for capturing this token from the URL, saving it (e.g., in localStorage), and using it for subsequent authenticated requests.\n\n**Note:** This endpoint cannot be tested using the 'Try it out' button as it relies on browser redirects.",
+        "responses": {
+          "302": {
+            "description": "Redirect to Google's authentication page. The browser will automatically follow this redirect. No response body is returned."
           },
           "500": {
             "description": "Internal Server Error",
@@ -531,8 +533,8 @@
           },
           "date_of_birth": {
             "type": "string",
-            "format": "date",
-            "example": "1995-08-17"
+            "format": "date-time",
+            "example": "1995-08-17T00:00:00.000Z"
           },
           "gender": {
             "type": "string",
@@ -615,6 +617,24 @@
             "type": "string",
             "format": "date-time",
             "example": "2023-10-27T10:00:00Z"
+          }
+        }
+      },
+      "SuccessResponseWithToken": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation successful"
+          },
+          "data": {
+            "type": "string",
+            "description": "A JWT token for authentication.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoi..."
           }
         }
       },
