@@ -31,11 +31,11 @@ export type UserCreate = {
   name: string;
   email: string;
   google_id?: string;
-  password: string;
-  date_of_birth: Date;
-  gender: string;
-  height: number;
-  weight: number;
+  password?: string;
+  date_of_birth?: Date;
+  gender?: string;
+  height?: number;
+  weight?: number;
 };
 
 export type UserUpdate = {

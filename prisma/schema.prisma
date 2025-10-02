@@ -15,14 +15,14 @@ datasource db {
 
 model User {
   user_id String @id @default(cuid())
-  name String @unique
+  name String? @unique
   email String @unique
   google_id String? @unique
-  password String
-  date_of_birth DateTime
-  gender String
-  height Float
-  weight Float
+  password String?
+  date_of_birth DateTime?
+  gender String?
+  height Float?
+  weight Float?
   bmr Float?
   calorie Float?
   carbohydrate Float?

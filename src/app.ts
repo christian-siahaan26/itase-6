@@ -6,7 +6,9 @@ import logger from "morgan";
 import { setupSwagger } from "./utils/swagger";
 import { authorize } from "./middleware/auth";
 import dotenv from "dotenv";
+import passport from "passport";
 import authRouter from "./user/route";
+import "./utils/passport";
 
 dotenv.config();
 
@@ -17,6 +19,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors({ origin: "*" }));
+
+app.use(passport.initialize());
 
 // routes
 app.use("/api/auth/", authRouter);

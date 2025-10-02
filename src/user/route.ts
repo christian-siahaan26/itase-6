@@ -3,8 +3,8 @@ import { PrismaClient } from "@prisma/client";
 import UserRepository from "./repository";
 import UserService from "./services";
 import UserController from "./controller";
-// import jwt from "jsonwebtoken";
-// import passport from "passport";
+import passport from "passport";
+import { generateToken } from "../utils/jwt";
 import { authorize } from "../middleware/auth";
 
 const router = Router();
@@ -13,6 +13,30 @@ const prisma = new PrismaClient();
 const userRepository = new UserRepository(prisma);
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
+
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"], session: false })
+);
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: `${process.env.CLIENT_URL}/login?error=true`,
+    session: false,
+  }),
+  (req, res) => {
+    const user = req.user as any;
+
+    if (!user) {
+        return res.redirect(`${process.env.CLIENT_URL}/login?error=true`);
+    }
+
+    const token = generateToken(user.user_id, user.email);
+
+    res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`);
+  }
+);
 
 router.post("/register", (req, res) => userController.register(req, res));
 router.post("/login", (req, res) => userController.login(req, res));
@@ -24,36 +48,5 @@ router.get("/:user_id", authorize, (req, res, next) =>
 router.patch("/:user_id", authorize, (req, res, next) =>
   userController.updateUserData(req, res, next)
 );
-
-// 1. Route untuk memulai proses login Google
-// Frontend akan mengarah ke URL ini
-// router.get(
-//   "/google",
-//   passport.authenticate("google", { scope: ["profile", "email"] })
-// );
-
-// // 2. Route callback yang akan dipanggil oleh Google setelah user setuju
-// router.get(
-//   "/google/callback",
-//   passport.authenticate("google", {
-//     failureRedirect: `${process.env.CLIENT_URL}/login/failed`, // Arahkan jika gagal
-//     session: false, // Kita akan menggunakan JWT, bukan session
-//   }),
-//   (req, res) => {
-//     // req.user berisi data user dari callback passport.use di atas
-//     const user = req.user as any;
-
-//     // Buat JWT
-//     const token = jwt.sign(
-//       { userId: user.user_id, email: user.email },
-//       process.env.JWT_SECRET!, // Pastikan ada JWT_SECRET di .env
-//       { expiresIn: "1d" }
-//     );
-
-//     // Redirect ke frontend dengan membawa token
-//     // Frontend harus bisa menangkap token ini dari URL parameter
-//     res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`);
-//   }
-// );
 
 export default router;
