@@ -201,6 +201,52 @@ class UserController {
       next(error)
     }
   }
+
+  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: "Email is required.",
+        });
+      }
+      const message = await this.userService.forgotPassword(email);
+      return res.status(200).json({
+        success: true,
+        message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, otp, new_password } = req.body;
+      if (!email || !otp || !new_password) {
+        return res.status(400).json({
+          success: false,
+          message: "Email, OTP, and new password are required.",
+        });
+      }
+      const message = await this.userService.resetPassword(email, otp, new_password);
+
+      if(message !== "Password has been reset successfully.") {
+        return res.status(400).json({
+          success: false,
+          message,
+        })
+      }
+
+      return res.status(200).json({
+        success: true,
+        message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default UserController;

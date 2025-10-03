@@ -49,4 +49,7 @@ router.patch("/:user_id", authorize, (req, res, next) =>
   userController.updateUserData(req, res, next)
 );
 
+router.post("/forgot-password",(req, res, next) => userController.forgotPassword(req, res, next));
+router.post("/reset-password", (req, res, next) => userController.resetPassword(req, res, next));
+
 export default router;

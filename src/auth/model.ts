@@ -28,6 +28,9 @@ class UserModel {
   private created_at: Date;
   private updated_at: Date;
 
+  private password_reset_token: string | null;
+  private passwrod_reset_expired: Date | null;
+
   constructor(
     user_id: string,
     name: string | null,
@@ -54,7 +57,9 @@ class UserModel {
     magnesium: number | null,
     natrium: number | null,
     created_at: Date,
-    updated_at: Date
+    updated_at: Date,
+    password_reset_token: string | null,
+    passwrod_reset_expired: Date | null
   ) {
     this.user_id = user_id;
     this.name = name;
@@ -82,6 +87,8 @@ class UserModel {
     this.natrium = natrium;
     this.created_at = created_at;
     this.updated_at = updated_at;
+    this.password_reset_token = password_reset_token;
+    this.passwrod_reset_expired = passwrod_reset_expired;
   }
 
   static formEntity(prismaUser: PrismaUser) {
@@ -111,7 +118,9 @@ class UserModel {
       prismaUser.magnesium,
       prismaUser.natrium,
       prismaUser.created_at,
-      prismaUser.updated_at
+      prismaUser.updated_at,
+      prismaUser.password_reset_token,
+      prismaUser.password_reset_expired
     );
   }
 
@@ -143,6 +152,8 @@ class UserModel {
       natrium: this.natrium,
       created_at: this.created_at,
       updated_at: this.updated_at,
+      password_reset_token: this.password_reset_token,
+      password_reset_expired: this.passwrod_reset_expired,
     };
   }
 }

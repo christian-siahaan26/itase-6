@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma, User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { UserCreate, UserUpdate } from "./type/user";
 import { getErrorMessage } from "../utils/error";
@@ -46,7 +46,7 @@ class UserRepository {
       throw new Error(getErrorMessage(error));
     }
   }
-  
+
   async findUserById(user_id: string): Promise<UserModel | string | null> {
     try {
       const user = await this.prisma.user.findFirst({
@@ -80,6 +80,46 @@ class UserRepository {
     } catch (error) {
       return getErrorMessage(error);
     }
+  }
+
+  async findUserByPasswordResetToken(token: string): Promise<User | null> {
+    return this.prisma.user.findFirst({
+      where: {
+        password_reset_token: token,
+        password_reset_expired: {
+          gt: new Date(),
+        },
+      },
+    });
+  }
+
+  async setUserPasswordResetToken(
+    user_id: string,
+    token: string,
+    expires: Date
+  ): Promise<void> {
+    await this.prisma.user.update({
+      where: { user_id },
+      data: {
+        password_reset_token: token,
+        password_reset_expired: expires,
+      },
+    });
+  }
+
+  async resetUserPassword(
+    user_id: string,
+    hashed_password: string
+  ): Promise<void> {
+    await this.prisma.user.update({
+      where: { user_id },
+      data: {
+        password: hashed_password,
+        password_reset_token: null,
+        password_reset_expired: null,
+        updated_at: new Date(),
+      },
+    });
   }
 }
 

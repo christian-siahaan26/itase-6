@@ -158,6 +158,141 @@
         }
       }
     },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "Request a password reset (Step 1)",
+        "tags": [
+          "Users"
+        ],
+        "description": "Initiates the password reset process for a user. The user provides their email address. If the email exists for a manually registered account (not a Google account), a 6-digit OTP will be sent to their email. The OTP is valid for 10 minutes.\n\nFor security reasons, this endpoint will always return a successful response, even if the email does not exist in the database.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "johndoe@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Request received. If an account with the provided email exists, an OTP has been sent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "If an account with that email exists, a password reset code has been sent."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (e.g., email not provided)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "Reset password with OTP (Step 2)",
+        "tags": [
+          "Users"
+        ],
+        "description": "Completes the password reset process. The user must provide their email, the 6-digit OTP they received, and their new password. The OTP must be valid and not expired.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "otp",
+                  "new_password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "johndoe@example.com"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "description": "The 6-digit OTP received via email.",
+                    "example": "123456"
+                  },
+                  "new_password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "The user's new desired password.",
+                    "example": "myNewStrongPassword456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password has been reset successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password has been reset successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (e.g., OTP is invalid or expired, or missing fields).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/authorize": {
       "post": {
         "summary": "Authorize with token",

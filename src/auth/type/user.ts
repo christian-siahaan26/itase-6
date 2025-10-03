@@ -45,6 +45,8 @@ export type UserUpdate = {
   gender?: string;
   height?: number;
   weight?: number;
+  password_reset_token?: string
+  password_reset_expired?: Date
 };
 
 export type UserFilters = {
