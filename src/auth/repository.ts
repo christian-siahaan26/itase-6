@@ -46,19 +46,7 @@ class UserRepository {
       throw new Error(getErrorMessage(error));
     }
   }
-
-  async findUserByGoogleId(google_id: string) {
-    try {
-      return await this.prisma.user.findUnique({
-        where: {
-          google_id,
-        },
-      });
-    } catch (error) {
-      throw new Error(getErrorMessage(error));
-    }
-  }
-
+  
   async findUserById(user_id: string): Promise<UserModel | string | null> {
     try {
       const user = await this.prisma.user.findFirst({

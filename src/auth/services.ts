@@ -92,8 +92,6 @@ class UserService {
     }
   }
 
-  async loginWithGoogle() {}
-
   async findUserData(user_id: string): Promise<UserModel | string> {
     try {
       const userData = await this.userRepository.findUserById(user_id);

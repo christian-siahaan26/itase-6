@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { PrismaClient } from "@prisma/client";
-import { getErrorMessage } from "./error";
+import { getErrorMessage } from "../utils/error";
 
 const prisma = new PrismaClient();
 
@@ -25,7 +25,7 @@ passport.use(
 
         const userEmail = profile.emails?.[0].value;
         if (!userEmail) {
-            return done(new Error("Google account email not found."), false);
+          return done(new Error("Google account email not found."), false);
         }
 
         user = await prisma.user.findUnique({
@@ -60,9 +60,9 @@ passport.serializeUser((user: any, done) => {
   done(null, user.user_id);
 });
 
-passport.deserializeUser(async (id: string, done) => {
+passport.deserializeUser(async (user_id: string, done) => {
   try {
-    const user = await prisma.user.findUnique({ where: { user_id: id } });
+    const user = await prisma.user.findUnique({ where: { user_id } });
     done(null, user);
   } catch (error) {
     done(error, null);
