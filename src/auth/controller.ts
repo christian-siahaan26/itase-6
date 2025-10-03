@@ -202,7 +202,7 @@ class UserController {
     }
   }
 
-  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+  async forgotPassword(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { email } = req.body;
       if (!email) {
@@ -221,7 +221,7 @@ class UserController {
     }
   }
 
-  async resetPassword(req: Request, res: Response, next: NextFunction) {
+  async resetPassword(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { email, otp, new_password } = req.body;
       if (!email || !otp || !new_password) {

@@ -16,7 +16,10 @@ const userController = new UserController(userService);
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"], session: false })
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false,
+  })
 );
 
 router.get(
@@ -29,7 +32,7 @@ router.get(
     const user = req.user as any;
 
     if (!user) {
-        return res.redirect(`${process.env.CLIENT_URL}/login?error=true`);
+      return res.redirect(`${process.env.CLIENT_URL}/login?error=true`);
     }
 
     const token = generateToken(user.user_id, user.email);
@@ -49,7 +52,11 @@ router.patch("/:user_id", authorize, (req, res, next) =>
   userController.updateUserData(req, res, next)
 );
 
-router.post("/forgot-password",(req, res, next) => userController.forgotPassword(req, res, next));
-router.post("/reset-password", (req, res, next) => userController.resetPassword(req, res, next));
+router.post("/forgot-password", authorize, (req, res, next) =>
+  userController.forgotPassword(req, res, next)
+);
+router.post("/reset-password", authorize, (req, res, next) =>
+  userController.resetPassword(req, res, next)
+);
 
 export default router;
