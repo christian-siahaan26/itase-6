@@ -1,10 +1,10 @@
 import UserRepository from "./repository";
 import { getErrorMessage } from "../utils/error";
 import UserModel from "./model";
-import { UserCreate, UserUpdate } from "./type/user";
+import { UserCreate, UserUpdate } from "./types/user";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import crypto from "crypto"
+import crypto from "crypto";
 import { sendPasswordResetOTP } from "../utils/mailer";
 
 const SECRET_KEY = process.env.JWT_SECRET as string;
@@ -169,31 +169,24 @@ class UserService {
     try {
       const user = await this.userRepository.findUserByEmail(email);
       if (!user || !user.password) {
-        // Jangan beri tahu jika user ada atau tidak untuk keamanan
-        // Juga, user Google tidak bisa reset password
         return "If an account with that email exists, a password reset code has been sent.";
       }
 
-      // 1. Buat OTP
       const otp = crypto.randomInt(100000, 1000000).toString();
 
-      // 2. Hash OTP sebelum disimpan di DB
       const hashedOtp = await bcrypt.hash(otp, 10);
-      const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
+      const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
-      // 3. Simpan OTP dan expiry di DB
       await this.userRepository.setUserPasswordResetToken(
         user.user_id,
         hashedOtp,
         expiry
       );
 
-      // 4. Kirim email berisi OTP (yang tidak di-hash)
       await sendPasswordResetOTP(user.email, otp);
 
       return "A password reset code has been sent to your email.";
     } catch (error) {
-      // Return pesan generik bahkan jika ada error, untuk keamanan
       console.error(error);
       return "If an account with that email exists, a password reset code has been sent.";
     }

@@ -1,6 +1,6 @@
 import { PrismaClient, Prisma, User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { UserCreate, UserUpdate } from "./type/user";
+import { UserCreate, UserUpdate } from "./types/user";
 import { getErrorMessage } from "../utils/error";
 import UserModel from "./model";
 

@@ -7,6 +7,7 @@ import { setupSwagger } from "./utils/swagger";
 import dotenv from "dotenv";
 import passport from "passport";
 import authRouter from "./auth/route";
+import analyseRouter from "./analysis/route";
 import "./auth/passport";
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(passport.initialize());
 
 // routes
 app.use("/api/auth/", authRouter);
+app.use("/api/analyse/", analyseRouter);
 
 // swagger
 setupSwagger(app);

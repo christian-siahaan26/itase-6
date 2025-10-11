@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import UserRepository from "./repository";
-import UserService from "./services";
+import UserService from "./service";
 import UserController from "./controller";
 import passport from "passport";
 import { generateToken } from "../utils/jwt";

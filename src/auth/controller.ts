@@ -1,5 +1,5 @@
 import e, { NextFunction, Request, Response } from "express";
-import UserService from "./services";
+import UserService from "./service";
 import { getErrorMessage } from "../utils/error";
 import { AuthRequest } from "../middleware/auth";
 import { generateToken, verifyToken } from "../utils/jwt";
@@ -185,20 +185,20 @@ class UserController {
         req.body
       );
 
-      if (typeof result === 'string') {
+      if (typeof result === "string") {
         return res.status(400).json({
           success: false,
-          message: result
-        })
+          message: result,
+        });
       }
 
       return res.status(200).json({
         success: true,
         message: "Success update user data",
-        data: result
-      })
+        data: result,
+      });
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
@@ -230,13 +230,17 @@ class UserController {
           message: "Email, OTP, and new password are required.",
         });
       }
-      const message = await this.userService.resetPassword(email, otp, new_password);
+      const message = await this.userService.resetPassword(
+        email,
+        otp,
+        new_password
+      );
 
-      if(message !== "Password has been reset successfully.") {
+      if (message !== "Password has been reset successfully.") {
         return res.status(400).json({
           success: false,
           message,
-        })
+        });
       }
 
       return res.status(200).json({
