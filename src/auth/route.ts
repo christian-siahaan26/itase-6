@@ -37,7 +37,7 @@ router.get(
 
     const token = generateToken(user.user_id, user.email);
 
-    res.redirect(`${process.env.CLIENT_URL}`);
+    res.redirect(`${process.env.CLIENT_URL}/mainpage`);
   }
 );
 
