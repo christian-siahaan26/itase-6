@@ -28,17 +28,8 @@ router.get(
     failureRedirect: `${process.env.CLIENT_URL}/login?error=true`,
     session: false,
   }),
-  (req, res) => {
-    const user = req.user as any;
-
-    if (!user) {
-      return res.redirect(`${process.env.CLIENT_URL}/login?error=true`);
-    }
-
-    const token = generateToken(user.user_id, user.email);
-
-    res.redirect(`${process.env.CLIENT_URL}`);
-  }
+  // Panggil metode controller yang baru, bukan fungsi anonim
+  (req, res) => userController.googleLoginCallback(req, res)
 );
 
 router.post("/register", (req, res) => userController.register(req, res));

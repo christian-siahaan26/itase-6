@@ -11,6 +11,36 @@ class UserController {
     this.userService = userService;
   }
 
+  async googleLoginCallback(req: Request, res: Response) {
+    try {
+      // Passport.js secara otomatis akan menambahkan 'user' ke object 'req' setelah autentikasi berhasil
+      const user = req.user as any;
+
+      if (!user) {
+        // Jika karena suatu alasan user tidak ada, kirim respons error
+        return res.status(401).json({
+          success: false,
+          message: "Google authentication failed.",
+        });
+      }
+
+      // Buat token JWT sama seperti di metode lain
+      const token = generateToken(user.user_id, user.email);
+
+      // Kirim token sebagai respons JSON, bukan redirect URL
+      return res.status(200).json({
+        success: true,
+        message: "Google login successful",
+        data: token,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: getErrorMessage(error),
+      });
+    }
+  }
+
   async register(req: Request, res: Response) {
     try {
       const {
